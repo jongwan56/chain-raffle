@@ -1,52 +1,50 @@
 import { Eip1193Provider, ethers } from 'ethers';
-import { NextPage } from 'next';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import { useAccount } from '../common/connector';
+import { FC, useState } from 'react';
+import XMarkIcon from './icons/x-mark.icon';
 import { CONTRACT_ABI, CONTRACT_ADDRESS } from '../common/constants';
 
-const NewPage: NextPage = () => {
-  const router = useRouter();
+type Props = {
+  onClose: () => void;
+  onSuccess: () => void;
+};
 
+const NewModal: FC<Props> = ({ onClose, onSuccess }) => {
   const [newEventName, setNewEventName] = useState('');
   const [newEventDrawNumber, setNewEventDrawNumber] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const account = useAccount();
-
-  useEffect(() => {
-    if (!account) {
-      router.replace('/');
-    }
-  }, [account, router]);
+  const closeModal = () => {
+    setNewEventName('');
+    setNewEventDrawNumber('');
+    onClose();
+  };
 
   const createEvent = async () => {
     const provider = new ethers.BrowserProvider(window.ethereum as Eip1193Provider);
     const signer = await provider.getSigner();
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
-    const contractInstance = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-
-    const tx = await contractInstance.addEvent.populateTransaction(
-      newEventName,
-      parseInt(newEventDrawNumber),
-    );
+    setIsLoading(true);
 
     try {
-      setIsLoading(true);
-      const res = await signer.sendTransaction(tx);
+      const res = await contract.addEvent(newEventName, parseInt(newEventDrawNumber));
       await res.wait();
-      router.back();
+
+      onSuccess();
     } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+      if ((error as Error).message.includes('duplicated')) {
+        // Toast
+      }
     }
+
+    setIsLoading(false);
+    closeModal();
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center">
-      <div className="bg-white rounded p-8 w-96">
-        <h2 className="text-3xl font-bold mb-4 text-black">New Event</h2>
+    <div className="fixed left-0 top-0 flex items-center justify-center w-screen h-screen bg-gray-900 bg-opacity-50">
+      <div className="bg-white rounded-lg px-6 p-8 relative w-96">
+        <h2 className="text-2xl font-bold mb-4 text-black">New Event</h2>
         <div className="flex flex-col">
           <p className="text-xs text-neutral-500">Name</p>
           <input
@@ -76,9 +74,16 @@ const NewPage: NextPage = () => {
             Submit
           </button>
         </div>
+        <button
+          className="absolute top-3 right-3 flex justify-center items-center w-6 h-6 text-black"
+          disabled={isLoading}
+          onClick={closeModal}
+        >
+          <XMarkIcon />
+        </button>
       </div>
     </div>
   );
 };
 
-export default NewPage;
+export default NewModal;
