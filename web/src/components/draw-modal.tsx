@@ -33,8 +33,12 @@ const DrawModal: FC<Props> = ({ event, onClose, onSuccess }) => {
 
       onSuccess();
     } catch (error) {
-      if ((error as Error).message.includes('Insufficient participants number')) {
+      const errorMessage = (error as Error).message;
+
+      if (errorMessage.includes('Insufficient participants number')) {
         toast.error('Not enough participants!');
+      } else if (errorMessage.includes('Caller must be the event creator')) {
+        toast.error('Only the event creator can draw!');
       } else {
         console.error(error);
       }
