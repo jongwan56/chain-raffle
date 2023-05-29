@@ -1,4 +1,4 @@
-export const CONTRACT_ADDRESS = '0x3730d46c06572325fE649E075d6977Cd317113A9';
+export const CONTRACT_ADDRESS = '0x58c25aB76cB8759072e5139568669d5bB5b1153D';
 export const CONTRACT_ABI = [
   {
     inputs: [],
@@ -83,6 +83,25 @@ export const CONTRACT_ABI = [
         internalType: 'bool',
         name: 'isDrawn',
         type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'string',
+        name: 'eventName',
+        type: 'string',
+      },
+    ],
+    name: 'getEventByName',
+    outputs: [
+      {
+        internalType: 'string',
+        name: '',
+        type: 'string',
       },
     ],
     stateMutability: 'view',
