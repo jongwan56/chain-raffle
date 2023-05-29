@@ -75,12 +75,11 @@ const Home: NextPage = () => {
               <h3 className="text-black text-2xl font-semibold">{event.name}</h3>
               <p className="mt-2 text-black">Draw Number: {event.drawNumber}</p>
               <p className="mt-2 text-black">
-                Current state:{' '}
                 {event.isDrawn
                   ? event.drawNumber > 1
-                    ? 'Winners picked.'
-                    : 'Winner picked.'
-                  : 'Open to participants'}
+                    ? 'Winners picked!'
+                    : 'Winner picked!'
+                  : 'Open to participants.'}
               </p>
               <div className="mt-4 w-full h-12 rounded-full border-[1px] border-neutral-300 hover:bg-neutral-200 flex items-center justify-center">
                 <p className="text-neutral-800">{event.isDrawn ? 'See result' : 'See detail'}</p>

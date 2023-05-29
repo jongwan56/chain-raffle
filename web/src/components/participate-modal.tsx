@@ -1,5 +1,6 @@
 import { Eip1193Provider, ethers } from 'ethers';
 import { FC, useState } from 'react';
+import { toast } from 'react-toastify';
 import XMarkIcon from './icons/x-mark.icon';
 import { CONTRACT_ABI, CONTRACT_ADDRESS } from '../common/constants';
 import { Event } from '../pages';
@@ -28,17 +29,23 @@ const ParticipateModal: FC<Props> = ({ event, onClose, onSuccess }) => {
 
     try {
       const res = await contract.addParticipantToEvent(event.name, participantName);
-      await res.wait();
+
+      await toast.promise(res.wait(), {
+        pending: `Participating to event "${event.name}"`,
+        success: 'Participated successfully!',
+      });
 
       onSuccess();
+      closeModal();
     } catch (error) {
-      // if ((error as Error).message.includes('duplicated')) {
-      //   Toast
-      // }
+      if ((error as Error).message.includes('Participant is duplicated')) {
+        toast.error('Your name has already participated.');
+      } else {
+        console.error(error);
+      }
     }
 
     setIsLoading(false);
-    closeModal();
   };
 
   return (

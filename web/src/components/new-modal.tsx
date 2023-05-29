@@ -1,5 +1,6 @@
 import { Eip1193Provider, ethers } from 'ethers';
 import { FC, useState } from 'react';
+import { toast } from 'react-toastify';
 import XMarkIcon from './icons/x-mark.icon';
 import { CONTRACT_ABI, CONTRACT_ADDRESS } from '../common/constants';
 
@@ -28,17 +29,23 @@ const NewModal: FC<Props> = ({ onClose, onSuccess }) => {
 
     try {
       const res = await contract.addEvent(newEventName, parseInt(newEventDrawNumber));
-      await res.wait();
+
+      await toast.promise(res.wait(), {
+        pending: `Creating event "${newEventName}"`,
+        success: 'Event created successfully!',
+      });
 
       onSuccess();
+      closeModal();
     } catch (error) {
-      if ((error as Error).message.includes('duplicated')) {
-        // Toast
+      if ((error as Error).message.includes('Event is duplicated')) {
+        toast.error('Event name has already been used.');
+      } else {
+        console.error(error);
       }
     }
 
     setIsLoading(false);
-    closeModal();
   };
 
   return (

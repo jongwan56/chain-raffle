@@ -1,5 +1,6 @@
 import { Eip1193Provider, ethers } from 'ethers';
 import { FC, useState } from 'react';
+import { toast } from 'react-toastify';
 import XMarkIcon from './icons/x-mark.icon';
 import { CONTRACT_ABI, CONTRACT_ADDRESS } from '../common/constants';
 import { Event } from '../pages';
@@ -24,12 +25,18 @@ const DrawModal: FC<Props> = ({ event, onClose, onSuccess }) => {
       await contract.draw.staticCall(event.name);
 
       const res = await contract.draw(event.name, { gasLimit: 5000000 });
-      await res.wait();
+
+      await toast.promise(res.wait(), {
+        pending: `Drawing event "${event.name}"`,
+        success: 'Event drawn successfully!',
+      });
 
       onSuccess();
     } catch (error) {
       if ((error as Error).message.includes('Insufficient participants number')) {
-        // Toast
+        toast.error('Not enough participants!');
+      } else {
+        console.error(error);
       }
     }
 

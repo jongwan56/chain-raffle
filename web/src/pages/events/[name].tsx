@@ -144,7 +144,7 @@ const EventPage: NextPage = () => {
             setIsDrawModalOpen(false);
           }}
           onSuccess={() => {
-            getWinners(event.name);
+            getEvent(event.name);
           }}
         />
       )}
@@ -156,7 +156,7 @@ const EventPage: NextPage = () => {
             setIsParticipateModalOpen(false);
           }}
           onSuccess={() => {
-            getParticipants(event.name);
+            getEvent(event.name);
           }}
         />
       )}
