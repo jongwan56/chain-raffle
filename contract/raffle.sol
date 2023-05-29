@@ -1,5 +1,6 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract ChainRaffle {
     struct Event {
@@ -128,6 +129,11 @@ contract ChainRaffle {
         string memory ret;
         for (uint256 i = 0; i < events.length; i++) {
             ret = string.concat(ret, events[i].eventName);
+            ret = string.concat(ret, ",");
+            ret = string.concat(
+                ret,
+                Strings.toString(events[i].drawNumber)
+            );
             if (events[i].isDrawn) {
                 ret = string.concat(ret, ",1");
             } else {
@@ -137,6 +143,24 @@ contract ChainRaffle {
                 ret = string.concat(ret, ",");
             }
         }
+        return ret;
+    }
+
+    function getEventByName(
+        string calldata eventName
+    ) public view returns (string memory) {
+        require(isExistEvent(eventName), "Event not exists");
+        uint256 eventIndex = getEventIndex(eventName);
+        string memory ret;
+
+        ret = string.concat(ret, events[eventIndex].eventName);
+        ret = string.concat(ret, ",");
+        ret = string.concat(
+            ret,
+            Strings.toString(events[eventIndex].drawNumber)
+        );
+        ret = string.concat(ret, events[eventIndex].isDrawn ? ",1" : ",0");
+
         return ret;
     }
 
